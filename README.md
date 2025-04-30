@@ -1,148 +1,115 @@
-# hyper_ledger_fabric
-## Step 1: Create a new USER
-- It is always a smart idea not to use root to install these softwares. Let us create a new user.
-```sh
-sudo adduser <username>
+ 🚀 Hyperledger Fabric Setup — Blockchain Assignment
+
+Welcome! 👋  
+This repository contains a basic setup for Hyperledger Fabric, created as part of a blockchain coursework assignment. It includes installation steps, a sample network setup, and useful commands to help you get started with developing on Hyperledger Fabric.
+
+---
+
+📚 What’s This Project About?
+
+Hyperledger Fabric is an enterprise-grade permissioned blockchain platform designed for use in industrial or business applications. This project helps you set up a simple Fabric test network using official binaries and Docker containers — perfect for learning, experimentation, and fulfilling assignment goals.
+
+Whether you're running your first smart contract or just trying to understand how the network components communicate, this setup provides a practical entry point.
+
+---
+
+🧰 Prerequisites
+
+Make sure you have the following tools installed on your **Linux (Ubuntu preferred)** system:
+
+- ✅ Git
+- ✅ cURL
+- ✅ Docker
+- ✅ Docker Compose
+- ✅ Node.js (v14 or above)
+- ✅ npm (comes with Node.js)
+
+> ✅ You can check your versions using commands like `node -v`, `docker -v`, etc.
+
+---
+
+📦 Installation & Setup
+
+Step 1: Clone the Repository
+```bash
+git clone https://github.com/Ahyphen1/hyper_ledger_fabric.git
+cd hyper_ledger_fabric
 ```
-- Now we need to add our user to the sudo group.
-```sh
-sudo usermod -aG sudo <username>
+ Step 2: Install Dependencies
+```bash
+sudo apt update
+sudo apt install curl git docker.io docker-compose -y
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+sudo apt install nodejs -y
 ```
-- Switch to our newly created user:
-```sh
-su <username>
-```
-- Test the sudo access
-```sh
-sudo ls
-```
-## Step 2: Install Prerequisites
-### Curl Installation
-- Run below command to install Curl.
-```sh
-sudo apt-get install curl
-```  
-- Verify the installation and check the version of Curl using below command.
-```sh 
-curl --version
+Step 3: Download Fabric Binaries & Samples
+```bash
+curl -sSL https://bit.ly/2ysbOFE | bash -s
 ```
 
-### Git Installation
-- Open the ubuntu terminal and run below command. This will start the installation for Git.
-```sh	 
-sudo apt-get install git
-```	 
-- Run below command to check if Git is successfully installed or not. This should return the version of Git.
-```sh	 
-git --version
-```
+This command will download:
+- Fabric binaries
+- Docker images
+- The official `fabric-samples/` folder
 
-### [Nodejs Installation](https://github.com/16ratneshkumar/1_Year/blob/main/2_Semester/Computer%20Science/Blockchain/how%20to%20install%20node%20js.md)
-### Docker Installation
-- Install the latest version of Docker if it is not already installed.
-```sh
-sudo apt-get -y install docker-compose
-```
--  Run below command to check if docker and Docker Compose is successfully installed or not. This should return the version of it.
-```sh
-docker --version
-```
-```sh
-docker-compose --version
-```
-- Make sure the Docker daemon is running.
-```sh
-sudo systemctl start docker
-```
+---
 
-- **Optional: If you want the Docker daemon to start when the system starts, use the following:**
-```sh
-sudo systemctl enable docker
-```
+🛠️ Starting the Fabric Test Network
 
-- Add your user to the Docker group.
-```sh
-sudo usermod -a -G docker <username>
-```
-### Go Installation
-- Run below command to install golang package.
-```sh
-curl -O https://dl.google.com/go/go1.18.3.linux-amd64.tar.gz
-```
-- Extract the package.
-```sh
-tar xvf go1.18.3.linux-amd64.tar.gz
-```
-- Set the GOPATH
-```sh
-export GOPATH=$HOME/go
-```
-```sh
-export PATH=$PATH:$GOPATH/bin
-```
--  Run below command to check if docker and Docker Compose is successfully installed or not. This should return the version of it.
-```sh
-go version
-```
-### JQ (JSON query language Installation
-Optional: Install the latest version of jq (only required for the tutorials related to channel configuration transactions).
-```sh
-sudo apt-get install jq
-```
-
-### Step 3: Install Hyperledger Fabric Binaries, Docker Containers & Samples
-- Create new directory where you will install Hyperledger Fabric
-```sh
-mkdir fabric-network
-```
-
-### Install Hyperledger Fabric
-- To get the install script:
-```sh
-curl -sSLO https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh && chmod +x install-fabric.sh
-```
-- To pull the Docker containers and clone the samples repo, run one of these commands for example
-```sh
-./install-fabric.sh docker samples binary
-```
-or
-```sh
-./install-fabric.sh d s b
-```
-
-Congrats, you have installed Hyperledger Fabric with all dependencies.
-
-### Step 4: Test the Installation
-- To test the our installation, we will run test network that comes with fabric-samples
-
-```sh
+Navigate to the test network directory:
+```bash
 cd fabric-samples/test-network
 ```
-```sh
-./network.sh down 
-```
-```sh
-./network.sh up 
+
+Start the network:
+```bash
+./network.sh up
 ```
 
-- Using following Docker command we can check all running containers
-```sh
-docker ps -a
-```
-**You should be able to see the containers up and running.**
-### Step 5: Creating a Channel
-- You can use the network.sh script to create a channel between Org1 and Org2 and join their peers to the channel. Run the following command to create a channel with the default name of mychannel:
-```sh
-./network.sh createChannel
-```
-- You can also use the channel flag to create a channel with custom name.Using following cmd:
-```sh
-./network.sh createChannel -c <channel_name>
-```
-- If you want to bring up the network and create a channel in a single step, you can use the up and createChannel modes together:
-```sh
-./network.sh up createChannel
+> This spins up the ordering service, peers, and creates a default channel.
+
+---
+
+➕ (Optional) Deploy Sample Chaincode
+```bash
+./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-javascript -ccl javascript
 ```
 
+---
 
-Thank you!
+🧪 Sample Chaincode Commands
+
+🔁 Invoke Chaincode (Example)
+```bash
+peer chaincode invoke -o localhost:7050   --ordererTLSHostnameOverride orderer.example.com   --tls --cafile "$ORDERER_CA"   -C mychannel -n basic   -c '{"function":"InitLedger","Args":[]}'
+```
+
+🔍 Query Chaincode (Example)
+```bash
+peer chaincode query -C mychannel -n basic   -c '{"Args":["GetAllAssets"]}'
+```
+
+---
+
+
+
+❗ Common Issues & Fixes
+
+| Problem | Solution |
+|--------|----------|
+| `docker: command not found` | Make sure Docker is installed correctly and service is running |
+| `permission denied` errors | Use `sudo` or add your user to the docker group |
+| Ports already in use | Edit the `docker-compose.yaml` file to change ports |
+| Binary not found errors | Check if binaries (`peer`, `orderer`, etc.) are installed in PATH |
+
+---
+
+🎓 Author
+
+Created by Ahyphen1 
+This project is submitted as part of a Blockchain Development Assignment.
+
+---
+
+
+🌟 *Thank you for visiting this repository. Wishing you success in your blockchain journey and your exams! 🚀
